@@ -2227,6 +2227,10 @@ export class Message extends React.Component<Props, State> {
 
     this.handleOpen(event);
   };
+  
+  public handleContextMenu = (event: React.MouseEvent<HTMLDivElement>): void => {
+    this.showMenu(event);
+  };
 
   public renderContainer(): JSX.Element {
     const {
@@ -2333,6 +2337,7 @@ export class Message extends React.Component<Props, State> {
         role="button"
         onKeyDown={this.handleKeyDown}
         onClick={this.handleClick}
+        onContextMenu={this.handleContextMenu}
         onFocus={this.handleFocus}
         ref={this.focusRef}
       >
