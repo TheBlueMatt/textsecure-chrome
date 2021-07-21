@@ -3302,7 +3302,7 @@ button.module-conversation-details__action-button {
 
 .module-media-grid-item__image {
   height: 94px;
-  width: 94px;
+  width: 100%;
   object-fit: cover;
 }
 
@@ -3319,9 +3319,6 @@ button.module-conversation-details__action-button {
 }
 
 .module-media-grid-item__image-container {
-  height: 94px;
-  width: 94px;
-  object-fit: cover;
   position: relative;
 }
 
