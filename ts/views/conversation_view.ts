@@ -468,6 +468,7 @@ Whisper.ConversationView = Whisper.View.extend({
     dragover: 'onDragOver',
     dragleave: 'onDragLeave',
     drop: 'onDrop',
+    copy: 'onCopy',
     paste: 'onPaste',
   },
 
@@ -1571,6 +1572,50 @@ Whisper.ConversationView = Whisper.View.extend({
           error && error.stack ? error.stack : error
         );
       }
+    }
+  },
+
+  onCopy(event: ClipboardEvent) {
+    const selection = window.getSelection();
+    if (selection) {
+      const documentFragment = selection.getRangeAt(0).cloneContents();
+      //convert all emojis in the fragment to their text representations for the sake of copying them
+      documentFragment
+        .querySelectorAll('img.emoji')
+        .forEach(emoji => emoji.replaceWith(emoji.getAttribute('alt') || ''));
+
+      const messagesInSelection = documentFragment.querySelectorAll(
+        '.module-message__container-outer'
+      );
+      if (messagesInSelection.length) {
+        let textToClipboard = '';
+        messagesInSelection.forEach(message => {
+          const textElement = message.querySelector('div.module-message__text');
+          if (textElement) {
+            const isOutgoing = textElement.className.includes('outgoing');
+            const sentTimestamp = message.querySelector(
+              'div.module-message__metadata'
+            )?.textContent;
+            const author = isOutgoing
+              ? window.i18n('you')
+              : message.querySelector('div.module-message__author')
+                  ?.textContent;
+
+            if (author && sentTimestamp) {
+              textToClipboard += `\n${author}, ${sentTimestamp}:`;
+            } else if (author || sentTimestamp) {
+              textToClipboard += `\n${author || sentTimestamp}:`;
+            }
+            textToClipboard += `\n${textElement.textContent}`;
+          }
+        });
+
+        navigator.clipboard.writeText(textToClipboard.trimStart());
+      } else if (documentFragment.textContent) {
+        navigator.clipboard.writeText(documentFragment.textContent);
+      }
+      event.stopPropagation();
+      event.preventDefault();
     }
   },
 
